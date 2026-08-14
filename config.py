@@ -18,10 +18,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 DATA_DIR = ROOT / "data"
-DOCS_DIR = DATA_DIR / "own"          # the PDF collection lives here
-IMAGES_DIR = DATA_DIR / "images"     # figures extracted from PDFs, written by ingestion
-CHROMA_DIR = DATA_DIR / "chroma"     # the vector store, a plain directory on disk
-BM25_PATH = DATA_DIR / "bm25.pkl"
+
+DOCS_DIR = Path(os.environ.get("RAG_DOCS_DIR", DATA_DIR / "own"))
+"""The document collection. Overridable so the self-test can run the whole
+pipeline over a throwaway corpus without touching the real one."""
+
+INDEX_DIR = Path(os.environ.get("RAG_INDEX_DIR", DATA_DIR))
+"""Everything ingestion *writes* lives under here. Points somewhere else during
+the self-test, so a test run can never corrupt the real indexes."""
+
+IMAGES_DIR = INDEX_DIR / "images"    # figures extracted from PDFs, written by ingestion
+CHROMA_DIR = INDEX_DIR / "chroma"    # the vector store, a plain directory on disk
+BM25_PATH = INDEX_DIR / "bm25.pkl"
 EVAL_SET = ROOT / "eval" / "eval_set.json"
 RESULTS_DIR = ROOT / "eval" / "results"
 
@@ -74,6 +82,29 @@ MIN_IMAGE_PIXELS = 128
 PAGE_RENDER_DPI = 150
 """Whole-page renders, used for scanned pages and slide-style layouts where the
 figure is not an embedded image but part of the page itself."""
+
+PAGE_RENDER_MODE = os.environ.get("RAG_PAGE_RENDER", "auto")
+"""When to also store a picture of the whole page.
+
+    "auto"   only when the page would otherwise be invisible to image search
+             (see below) — the default, and the right one for most collections
+    "all"    every page. Use for slide decks that are essentially all diagrams
+    "never"  embedded figures only
+
+"auto" renders a page when either:
+  - it has almost no extractable text (a scanned page — text search is blind to
+    it, so the page render is the *only* way to retrieve it), or
+  - it has no embedded raster images but plenty of vector drawing commands.
+    This second case matters more than it sounds: diagrams in slide decks and
+    papers are very often vector art, so `get_images()` returns nothing at all
+    and the figure would silently never be indexed."""
+
+MIN_PAGE_TEXT_WORDS = 30
+"""Below this, a page counts as "no real text" — probably a scan or a title slide."""
+
+MIN_VECTOR_DRAWINGS = 8
+"""Vector drawing commands needed before a page counts as holding a diagram.
+A handful of commands is just a rule, a border or a table line."""
 
 # ---------------------------------------------------------------- retrieval
 
