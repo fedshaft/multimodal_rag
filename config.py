@@ -51,10 +51,19 @@ CLIP_PRETRAINED = "laion2b_s34b_b79k"
 """Image encoder: puts pictures and words in the *same* number space, which is
 what lets a typed question find a diagram. ~600 MB."""
 
-RERANK_MODEL = "BAAI/bge-reranker-base"
+RERANK_MODEL = os.environ.get("RAG_RERANK_MODEL", "BAAI/bge-reranker-base")
 """Cross-encoder: reads the question and one candidate together and scores the
 pair. Much more accurate than comparing pre-computed vectors, far too slow to
-run over the whole collection — hence only over the shortlist."""
+run over the whole collection — hence only over the shortlist.
+
+Measured on this PC (12 CPU cores, no GPU), 60 candidates of ~300 words:
+
+    BAAI/bge-reranker-base              ~14 s   default; the accurate one
+    cross-encoder/ms-marco-MiniLM-L-6-v2 ~1.6 s  9x faster, smaller, English only
+
+Both are cached locally. Override with RAG_RERANK_MODEL when iterating, and
+report both in the results table — accuracy against latency is exactly the
+trade-off the write-up is supposed to show."""
 
 GEN_MODEL = os.environ.get("RAG_GEN_MODEL", "qwen2.5vl:3b")
 """The vision LLM served by Ollama. THIS is the one line that differs between
