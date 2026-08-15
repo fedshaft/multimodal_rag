@@ -122,6 +122,29 @@ RRF_K = 60             # the constant in reciprocal rank fusion, 60 is standard
 RERANK_TOP_N = 60      # stage 3: cross-encoder rescores this many candidates
 TOP_K_FINAL = 5        # what actually reaches the LLM
 
+MAX_IMAGES_FINAL = 2
+"""How many of the TOP_K_FINAL slots may be images.
+
+The reranker is a *text* cross-encoder: it cannot read a picture, so images can
+never win a slot on reranked score. Without a reserved quota the full system
+would quietly become text-only — losing exactly the thing this project is
+about. Two slots out of five leaves room for the text that usually carries the
+actual answer."""
+
+IMAGE_SCORE_FLOOR = 0.25
+"""Minimum CLIP similarity before an image may take one of those slots.
+
+Without a floor, a purely textual question ("define X") still spends two of its
+five slots on the least-bad picture in the collection, which wastes prompt
+space and invites the LLM to describe something irrelevant.
+
+Measured on the self-test corpus: correct figures scored 0.255-0.363 for their
+own query, while figures fetched for an unrelated question scored 0.149-0.232.
+The gap is narrow because those fixtures are crude drawings; **re-check this
+number once the real collection is indexed** — CLIP similarity is not
+calibrated across corpora, and this is the one retrieval constant that is
+genuinely corpus-dependent."""
+
 
 @dataclass
 class Method:
