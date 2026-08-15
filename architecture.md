@@ -132,7 +132,16 @@ incompatible scales.
 **Stage 3 — Precision (slow, accurate).** A cross-encoder reads the question **together
 with** each of the ~60 candidates and scores relevance directly. This is far more accurate
 than comparing pre-computed numbers, but far too slow to run over the whole collection —
-hence the two-stage design. Cost: ~80 ms.
+hence the two-stage design. Cost, *measured* on the development PC (12 CPU cores, no GPU),
+60 candidates of ~300 words: **~14 s** with `bge-reranker-base`, **~1.6 s** with
+`ms-marco-MiniLM-L-6-v2`. This dominates retrieval latency by two orders of magnitude —
+stages 1 and 2 together take ~90 ms — and is the single most interesting number in the
+latency column.
+
+Note that the cross-encoder is a **text** model: it cannot score an image. Image evidence
+therefore keeps the rank fusion gave it, and the final top-5 is assembled from two lanes —
+reranked text, plus up to two images that clear a CLIP-similarity floor — interleaved by
+rank. A reranker that reads both modalities is deferred to the major project (§8).
 
 **Stage 4 — Generation.** The top 5 results, text and images together, go to the local
 vision model with an instruction to answer using only the provided sources and to cite them.
@@ -192,13 +201,21 @@ project's headline result.
 
 ### Result table — one eval set, every method
 
-| Method | Recall@5 | MRR | nDCG@10 | Latency |
+Latency below is *measured* on the development PC (12 cores, no GPU) over the self-test
+corpus — the retrieval stages, not generation. Metrics are day 5's job; the timings were
+free to collect on day 3 and are already real numbers rather than estimates.
+
+| Method | Recall@5 | MRR | nDCG@10 | Latency (measured) |
 |---|---|---|---|---|
-| BM25 (keyword, text only) | | | | ~5 ms |
-| Dense text (BGE-small) | | | | ~10 ms |
-| Hybrid (BM25 + dense) | | | | ~15 ms |
-| Hybrid + CLIP images (multimodal) | | | | ~25 ms |
-| Full system (+ cross-encoder rerank) | | | | ~100 ms |
+| BM25 (keyword, text only) | | | | <1 ms |
+| Dense text (BGE-small) | | | | ~30 ms |
+| Hybrid (BM25 + dense) | | | | ~30 ms |
+| Hybrid + CLIP images (multimodal) | | | | ~90 ms |
+| Full system (+ cross-encoder rerank) | | | | ~3.4 s (base) / ~0.4 s (MiniLM) |
+
+The rerank figures are for the self-test corpus, where the merge only produces ~16
+candidates. On a real collection the shortlist is the full 60, which measures ~14 s and
+~1.6 s respectively — re-measure and replace these once the own corpus is indexed.
 
 This gives the quality-versus-latency trade-off discussion: each row adds accuracy and adds
 milliseconds, and the report argues about where the sensible operating point is.
