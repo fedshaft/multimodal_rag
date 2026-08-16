@@ -76,6 +76,12 @@ machines — override it without editing the file:
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 GEN_TIMEOUT = 300  # seconds; CPU generation with images is genuinely slow
 
+GEN_TEMPERATURE = 0.0
+"""Greedy decoding. Sampling would make the same question give a different
+answer on every run, which would mean day 5's citation accuracy — and the demo
+— depend on luck. Zero is not fully deterministic on all backends, but it
+removes the main source of run-to-run variation."""
+
 # ---------------------------------------------------------------- ingestion
 
 CHUNK_WORDS = 300
@@ -208,7 +214,18 @@ Rules:
 content that is not visible.
 - If the evidence does not answer the question, say "Not found in the documents." \
 Do not fill the gap with a plausible-sounding guess.
-- Be concise: a few sentences unless the question needs more."""
+- Be concise: a few sentences unless the question needs more.
+- Always write the answer in full sentences. A bare citation like "[2]" is not \
+an answer — say what the evidence shows, then cite it."""
+
+GEN_IMAGE_MAX_PX = 1024
+"""Longest edge of an image sent to the LLM; larger ones are downscaled first.
+
+A whole-page render at PAGE_RENDER_DPI is ~1240x1755, and a vision model turns
+that into a great many image tokens. Measured on this PC with qwen2.5vl:3b: a
+full-page render took **150 s** to answer against **62 s** for a small extracted
+figure. Downscaling costs nothing in retrieval (the index keeps the full-size
+file) and only the LLM's reading of an already-selected figure is affected."""
 
 # ---------------------------------------------------------------- evaluation
 
