@@ -51,7 +51,16 @@ class Evidence:
     @property
     def image_path(self) -> Path | None:
         """The image file, or None for non-image evidence."""
-        return Path(self.content) if self.is_image else None
+        if not self.is_image:
+            return None
+        p = Path(self.content)
+        if p.exists():
+            return p
+        import config
+        local_p = config.IMAGES_DIR / p.name
+        if local_p.exists():
+            return local_p
+        return p
 
     def with_score(self, score: float) -> "Evidence":
         """A copy with a new score. Used by retrieval and reranking so a stage

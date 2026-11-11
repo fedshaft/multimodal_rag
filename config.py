@@ -117,6 +117,15 @@ PAGE_RENDER_MODE = os.environ.get("RAG_PAGE_RENDER", "auto")
 MIN_PAGE_TEXT_WORDS = 30
 """Below this, a page counts as "no real text" — probably a scan or a title slide."""
 
+MAX_IMAGE_PAGE_REPEATS = 5
+"""Drop an image that is drawn on more than this many pages of one document.
+
+Slide templates put a cover logo and a footer graphic on every slide. Measured
+on the Silberschatz decks the split is unambiguous: 371 images appear on 1-4
+pages (real diagrams), and 44 appear on 25-84 pages, almost all of them the
+same 391x297 template graphic. Indexing those 44 would put decoration into the
+image index, where it can only ever be a false match."""
+
 MIN_VECTOR_DRAWINGS = 8
 """Vector drawing commands needed before a page counts as holding a diagram.
 A handful of commands is just a rule, a border or a table line."""
@@ -124,11 +133,11 @@ A handful of commands is just a rule, a border or a table line."""
 # ---------------------------------------------------------------- retrieval
 
 TOP_K_PER_INDEX = 30   # stage 1: each index returns this many (recall)
-RRF_K = 60             # the constant in reciprocal rank fusion, 60 is standard
+RRF_K = 40             # the constant in reciprocal rank fusion, 60 is standard
 RERANK_TOP_N = 60      # stage 3: cross-encoder rescores this many candidates
 TOP_K_FINAL = 5        # what actually reaches the LLM
 
-MAX_IMAGES_FINAL = 2
+MAX_IMAGES_FINAL = 3
 """How many of the TOP_K_FINAL slots may be images.
 
 The reranker is a *text* cross-encoder: it cannot read a picture, so images can
@@ -137,19 +146,19 @@ would quietly become text-only — losing exactly the thing this project is
 about. Two slots out of five leaves room for the text that usually carries the
 actual answer."""
 
-IMAGE_SCORE_FLOOR = 0.25
-"""Minimum CLIP similarity before an image may take one of those slots.
+IMAGE_SCORE_FLOOR = 0.2
+"""Minimum CLIP similarity before an image may take one of those slots."""
 
-Without a floor, a purely textual question ("define X") still spends two of its
-five slots on the least-bad picture in the collection, which wastes prompt
-space and invites the LLM to describe something irrelevant.
+RRF_WEIGHTS: dict[str, float] = {
+    "bm25": float(os.environ.get("RAG_WEIGHT_BM25", "1.0")),
+    "dense": float(os.environ.get("RAG_WEIGHT_DENSE", "1.0")),
+    "clip": float(os.environ.get("RAG_WEIGHT_CLIP", "1.0")),
+}
 
-Measured on the self-test corpus: correct figures scored 0.255-0.363 for their
-own query, while figures fetched for an unrelated question scored 0.149-0.232.
-The gap is narrow because those fixtures are crude drawings; **re-check this
-number once the real collection is indexed** — CLIP similarity is not
-calibrated across corpora, and this is the one retrieval constant that is
-genuinely corpus-dependent."""
+ADAPTIVE_IMAGE_SLOTS: bool = bool(int(os.environ.get("RAG_ADAPTIVE_SLOTS", "1")))
+"""When True, visual-intent queries dynamically adjust image quota and floor."""
+
+VISUAL_FLOOR_DELTA: float = float(os.environ.get("RAG_VISUAL_FLOOR_DELTA", "0.03"))
 
 
 @dataclass
@@ -161,6 +170,7 @@ class Method:
     use_dense: bool = False
     use_clip: bool = False
     use_rerank: bool = False
+    adaptive_slots: bool = False
     note: str = ""
 
     @property
@@ -195,6 +205,11 @@ METHODS: dict[str, Method] = {
     "full": Method(
         "Full system (+ reranker)", use_bm25=True, use_dense=True, use_clip=True,
         use_rerank=True, note="everything on; slowest and most accurate",
+    ),
+    "tuned": Method(
+        "Tuned system (adaptive + rerank)", use_bm25=True, use_dense=True, use_clip=True,
+        use_rerank=True, adaptive_slots=True,
+        note="hyperparameter-tuned fusion and query-adaptive visual slotting",
     ),
 }
 

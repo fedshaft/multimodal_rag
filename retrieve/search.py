@@ -82,22 +82,41 @@ def warm_up(method: config.Method | None = None) -> float:
 
 # ---------------------------------------------------------------- merging
 
+VISUAL_KEYWORDS = {
+    "diagram", "figure", "chart", "graph", "plot", "illustration",
+    "flowchart", "drawing", "picture", "schematic", "architecture",
+    "visual", "layout", "timeline", "table", "hardware", "slide",
+    "structure", "organization", "hierarchy", "state machine",
+}
+
+
+def has_visual_intent(query: str | None) -> bool:
+    """Returns True if the query explicitly or implicitly asks for a visual piece of evidence."""
+    if not query:
+        return False
+    cleaned = query.lower().replace("?", " ").replace(",", " ").replace(".", " ").replace(":", " ")
+    words = set(cleaned.split())
+    return bool(words & VISUAL_KEYWORDS)
+
+
 def rrf_merge(rankings: dict[str, list[Evidence]],
-              k: int = config.RRF_K) -> list[Evidence]:
+              k: int = config.RRF_K,
+              weights: dict[str, float] | None = None) -> list[Evidence]:
     """Several ranked lists in, one ranked list out.
 
-    The returned Evidence carries the fused score, plus the rank and raw score
-    it had in each contributing index — kept because "BM25 had it at 1, dense
-    never saw it" is the sort of thing that explains a bad result later.
+    Supports per-index weighting (Weighted RRF):
+    score(d) = sum_m w_m / (k + rank_m(d))
     """
+    weights = weights or getattr(config, "RRF_WEIGHTS", None)
     fused: dict[str, float] = {}
     keep: dict[str, Evidence] = {}
     ranks: dict[str, dict[str, int]] = {}
     raw: dict[str, dict[str, float]] = {}
 
     for index_name, results in rankings.items():
+        w = weights.get(index_name, 1.0) if weights else 1.0
         for rank, e in enumerate(results, start=1):
-            fused[e.id] = fused.get(e.id, 0.0) + 1.0 / (k + rank)
+            fused[e.id] = fused.get(e.id, 0.0) + w / (k + rank)
             keep.setdefault(e.id, e)
             ranks.setdefault(e.id, {})[index_name] = rank
             raw.setdefault(e.id, {})[index_name] = e.score
@@ -120,34 +139,60 @@ def clip_score(e: Evidence) -> float:
 
 def select_final(candidates: list[Evidence], k: int | None = None,
                  max_images: int | None = None,
-                 floor: float | None = None) -> list[Evidence]:
+                 floor: float | None = None,
+                 query: str | None = None,
+                 adaptive: bool | None = None) -> list[Evidence]:
     """Cut the shortlist down to what the LLM actually sees.
 
-    Text and images are treated as two lanes rather than one list, because
-    after reranking their scores are not comparable at all (cross-encoder
-    logits versus CLIP cosine similarity). Images get at most
-    MAX_IMAGES_FINAL slots and only if they clear IMAGE_SCORE_FLOOR, then the
-    two lanes are interleaved so a good figure can still come out near the top
-    — which is the whole point of a figure question.
+    When adaptive is True:
+    - If query has visual intent ("diagram", "figure", "chart"), image quota is
+      expanded to min(max_images + 1, k - 1) and the floor is relaxed by
+      VISUAL_FLOOR_DELTA so candidates are not dropped at the final cut.
+      High-scoring images are positioned at rank 1.
+    - If query is purely textual, image quota is restricted to 1 and floor is
+      tightened, protecting text evidence slots from irrelevant image intrusion.
     """
     k = k or config.TOP_K_FINAL
     max_images = config.MAX_IMAGES_FINAL if max_images is None else max_images
     floor = config.IMAGE_SCORE_FLOOR if floor is None else floor
+    adaptive = config.ADAPTIVE_IMAGE_SLOTS if adaptive is None else adaptive
+
+    is_visual = has_visual_intent(query) if (adaptive and query) else False
+
+    if is_visual:
+        effective_floor = max(floor - config.VISUAL_FLOOR_DELTA, 0.18)
+        eff_max_images = min(max_images + 1, max(k - 1, 1))
+    elif adaptive:
+        effective_floor = floor + 0.02
+        eff_max_images = min(max_images, 1)
+    else:
+        effective_floor = floor
+        eff_max_images = max_images
 
     texts = [e for e in candidates if not e.is_image]
-    images = [e for e in candidates if e.is_image and clip_score(e) >= floor]
+    images = [e for e in candidates if e.is_image and clip_score(e) >= effective_floor]
 
-    # Never let images take the whole answer: there must be room for text.
-    n_img = min(max_images, len(images), max(k - 1, 0))
+    n_img = min(eff_max_images, len(images), max(k - 1, 0))
     chosen_images = images[:n_img]
     chosen_texts = texts[:k - n_img]
 
     out: list[Evidence] = []
-    for i in range(max(len(chosen_texts), len(chosen_images))):
-        if i < len(chosen_texts):
-            out.append(chosen_texts[i])
-        if i < len(chosen_images):
-            out.append(chosen_images[i])
+    # If the user specifically sought a visual element and we found one, lead with it:
+    if is_visual and chosen_images:
+        out.append(chosen_images[0])
+        rem_images = chosen_images[1:]
+        rem_texts = chosen_texts
+        for i in range(max(len(rem_texts), len(rem_images))):
+            if i < len(rem_texts):
+                out.append(rem_texts[i])
+            if i < len(rem_images):
+                out.append(rem_images[i])
+    else:
+        for i in range(max(len(chosen_texts), len(chosen_images))):
+            if i < len(chosen_texts):
+                out.append(chosen_texts[i])
+            if i < len(chosen_images):
+                out.append(chosen_images[i])
     return out[:k]
 
 
@@ -180,7 +225,9 @@ def search(query: str, k: int | None = None,
         out.timings["rerank"] = time.perf_counter() - t0
 
     out.candidates = merged
-    out.evidence = select_final(merged, k=k)
+    out.evidence = select_final(
+        merged, k=k, query=query, adaptive=getattr(method, "adaptive_slots", False)
+    )
     out.timings["total"] = time.perf_counter() - t_start
     return out
 

@@ -1,0 +1,32 @@
+id,question,label
+q01,How does the operating system regain control of the CPU from a process that is stuck in an infinite loop and never makes a system call?,text
+q02,"In round-robin scheduling, what constrains how long a time slice can be?",text
+q03,How can a process game a multi-level feedback queue scheduler to monopolise the CPU?,both
+q04,Why does NFS cache file data on the client side?,text
+q05,Why is average disk seek time usually quoted as one third of the full seek time?,text
+q06,"In the SEER traces, what fraction of file accesses were to the same file or to a file in the same directory?",text
+q07,"How does XFS store directories, and why is that faster than a simple linear list?",both
+q08,Why is the system call that removes a file called unlink() rather than remove or delete?,text
+q09,How does adding a checksum to the begin and end blocks of a journal transaction improve write performance?,both
+q10,"What random write bandwidth does a mirrored RAID-1 array deliver, and why?",text
+q11,"In a block-level FTL, how does an SSD translate a read of logical address 2002?",both
+q12,How can pthread_mutex_trylock() be used to build a deadlock-free lock acquisition protocol?,text
+q13,Why must a thread waiting on a condition variable re-check the condition in a while loop rather than an if?,text
+q14,"What sequence of x86 instructions does incrementing a shared counter compile to, and why does that cause a race condition?",text
+q15,"How does a ticket lock use fetch-and-add, and what does it guarantee that earlier lock attempts do not?",text
+q16,How can a producer/consumer solution built with semaphores deadlock?,text
+q17,What does an allocation library do when the heap runs out of space?,text
+q18,"According to the process state diagram, what event moves a process from the waiting state back to ready?",figure
+q19,"In the diagram of a process's memory layout, which section sits at the highest addresses and which grows downward?",figure
+q20,"Which part of a C program's memory does a malloc'd array live in, and where do argc and argv sit?",both
+q21,What does a single-threaded process have exactly one of that a multithreaded process has several of?,figure
+q22,"In the multithreaded server diagram, what does the server do immediately after creating a thread to service a request?",figure
+q23,"What are the components of a monitor, and where do threads wait before they can enter it?",figure
+q24,"In the resource-allocation graph, which resource has instances that are all still free?",figure
+q25,"At which stages can a user program be bound to memory addresses, from source program through to execution?",figure
+q26,"In the hardware address-protection diagram, what happens when a logical address is not less than the limit register?",figure
+q27,"In the typical PC bus structure, what connects the disks to the rest of the system?",figure
+q28,"In the interrupt-driven I/O cycle, at what point does the CPU check for interrupts?",figure
+q29,"Which file types are listed with the extensions arc, zip and tar, and what is their function?",figure
+q30,"What are the layers of the file system, from application programs down to the devices?",figure
+q31,Where do system calls sit in relation to the user interface and the operating system's services?,figure

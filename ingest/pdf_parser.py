@@ -68,6 +68,43 @@ def _save_image(data: bytes, dest: Path) -> tuple[int, int] | None:
     return img.width, img.height
 
 
+def _drawn_images(page: pymupdf.Page) -> list[dict]:
+    """Images actually *drawn* on this page, biggest first.
+
+    Not `page.get_images()`. That returns the page's whole resource pool, and
+    LibreOffice's PPTX->PDF conversion gives every slide in a deck the same
+    pooled list — so on the Silberschatz decks it reports all 31 of a chapter's
+    images on every one of its 67 slides (2077 hits where there are 160). Worse
+    than the wasted work, the dedupe then pins every image to page 1, and the
+    day-5 answer key is page-addressed: wrong pages would be baked into the
+    labels and silently score every configuration against fiction.
+
+    `get_image_info(xrefs=True)` reports only what the page really renders.
+    """
+    try:
+        info = page.get_image_info(xrefs=True)
+    except Exception:
+        return []
+    out = [i for i in info
+           if i.get("xref")
+           and i.get("width", 0) >= config.MIN_IMAGE_PIXELS
+           and i.get("height", 0) >= config.MIN_IMAGE_PIXELS]
+    out.sort(key=lambda i: i["width"] * i["height"], reverse=True)
+    return out
+
+
+def _template_xrefs(doc: pymupdf.Document) -> set[int]:
+    """Images repeated on many pages of one document — logos, footers, the deck
+    template. See config.MAX_IMAGE_PAGE_REPEATS."""
+    if doc.page_count <= config.MAX_IMAGE_PAGE_REPEATS:
+        return set()
+    counts: dict[int, int] = {}
+    for page in doc:
+        for xref in {i["xref"] for i in _drawn_images(page)}:
+            counts[xref] = counts.get(xref, 0) + 1
+    return {x for x, c in counts.items() if c > config.MAX_IMAGE_PAGE_REPEATS}
+
+
 def _should_render_page(page: pymupdf.Page, text: str, n_embedded: int) -> str | None:
     """Decide whether to store a picture of the whole page. Returns the reason
     (which lands in metadata and is genuinely useful when debugging retrieval),
@@ -99,15 +136,16 @@ def parse_pdf(path: Path) -> tuple[list[tuple[int, str]], list[Evidence]]:
     pages: list[tuple[int, str]] = []
     images: list[Evidence] = []
     seen_xrefs: set[int] = set()  # a logo repeated on every slide shares one xref
+    template = _template_xrefs(doc)  # slide furniture, not content
 
     for pno, page in enumerate(doc, start=1):
         text = _page_text(page)
         pages.append((pno, text))
 
         kept_here = 0
-        for k, info in enumerate(page.get_images(full=True)):
-            xref = info[0]
-            if xref in seen_xrefs:
+        for k, info in enumerate(_drawn_images(page)):
+            xref = info["xref"]
+            if xref in template or xref in seen_xrefs:
                 continue
             seen_xrefs.add(xref)
             try:

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Black Hole — Multimodal Document Intelligence</title>
+  <meta name="description" content="A cinematic editorial exploration of Multimodal Retrieval-Augmented Generation across technical course literature, indexing text and visual diagrams in unified space.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%2305070a' stroke='%2338bdf8' stroke-width='3'/><circle cx='50' cy='50' r='16' fill='%23000'/></svg>">
+  
+  <!-- Editorial Typography: Syne, Newsreader, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="editorial-theme">
+
+  <!-- Subtle Analog Film Grain Overlay -->
+  <div class="film-grain-overlay" aria-hidden="true"></div>
+
+  <!-- Atmospheric Gravitational Starfield Canvas -->
+  <canvas id="space-canvas" aria-hidden="true"></canvas>
+
+  <!-- Ambient Cinematic Lighting -->
+  <div class="ambient-light-top" aria-hidden="true"></div>
+  <div class="ambient-light-bottom" aria-hidden="true"></div>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-container">
+
+    <!-- Minimalist Editorial Floating Header -->
+    <header class="editorial-header" id="editorial-header">
+      <div class="header-inner">
+        <!-- Brand Identity -->
+        <a class="brand-link" onclick="window.location.hash='mission'; location.reload();" title="Project Black Hole Home">
+          <div class="singularity-symbol" aria-hidden="true">
+            <div class="singularity-core"></div>
+            <div class="singularity-ring"></div>
+          </div>
+          <div class="brand-typography">
+            <span class="brand-name">PROJECT BLACK HOLE</span>
+            <span class="brand-monograph">MONOGRAPH NO. 02 // MULTIMODAL RAG</span>
+          </div>
+        </a>
+
+        <!-- Refined Editorial Navigation -->
+        <nav class="editorial-nav" id="main-nav" aria-label="Main Navigation">
+          <button class="nav-btn active" data-view="mission">
+            <span class="nav-idx">01</span>
+            <span class="nav-text">Mission</span>
+          </button>
+          <button class="nav-btn" data-view="playground">
+            <span class="nav-idx">02</span>
+            <span class="nav-text">Inquiry Console</span>
+          </button>
+          <button class="nav-btn" data-view="benchmark">
+            <span class="nav-idx">03</span>
+            <span class="nav-text">Evaluation Lab</span>
+          </button>
+          <button class="nav-btn" data-view="dataset">
+            <span class="nav-idx">04</span>
+            <span class="nav-text">Knowledge Archive</span>
+          </button>
+          <button class="nav-btn" data-view="architecture">
+            <span class="nav-idx">05</span>
+            <span class="nav-text">Appendix</span>
+          </button>
+        </nav>
+
+        <!-- Right System Controls -->
+        <div class="header-utilities">
+          <button class="audio-toggle-btn" id="btn-audio-toggle" aria-label="Toggle Observatory Atmosphere" title="Toggle Cosmic Planetary Sound">
+            <svg class="audio-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" class="sound-wave sound-wave-1"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" class="sound-wave sound-wave-2"/>
+            </svg>
+          </button>
+
+          <div class="system-status-indicator">
+            <span class="status-pulse" aria-hidden="true"></span>
+            <span class="status-text">ARCHIVE ONLINE</span>
+          </div>
+
+          <!-- Mobile Menu Trigger -->
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Navigation Menu">
+            <span class="menu-bar"></span>
+            <span class="menu-bar"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         VIEW 1: MISSION DECK (CINEMATIC EDITORIAL MONOGRAPH)
+         ==================================================================== -->
+    <main id="view-mission" class="view-section active">
+      
+      <!-- Section 1.1: 100vh Hero Cinematic Opening -->
+      <section class="hero-editorial-section">
+        <div class="hero-eyebrow-line">
+          <span class="eyebrow-tag">SCIENTIFIC INITIATIVE</span>
+          <span class="eyebrow-divider">—</span>
+          <span class="eyebrow-desc">LOCAL MULTIMODAL INTELLIGENCE OVER TECHNICAL SYSTEMS</span>
+        </div>
+
+        <h1 class="hero-monumental-headline">
+          See what the<br>
+          <span class="headline-italic">documents</span> hide.
+        </h1>
+
+        <div class="hero-content-columns">
+          <p class="hero-lead-text">
+            Conventional search algorithms are fundamentally blind to visual geometry. In technical computing literature, the most vital architectural truths—memory translations, process states, lock synchronizations, and scheduling hierarchies—are rarely conveyed in plain text. They are diagrammed.
+          </p>
+
+          <div class="hero-action-group">
+            <button class="editorial-cta-primary" id="hero-btn-explore">
+              <span>Enter Inquiry Console</span>
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+            <button class="editorial-cta-secondary" id="hero-btn-benchmark">
+              <span>Read Evaluation Lab</span>
+              <span class="arrow-up-right">↗</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Atmospheric Scientific Gravitational Centerpiece -->
+        <div class="hero-visual-centerpiece" aria-hidden="true">
+          <div class="singularity-visual-disc">
+            <div class="event-horizon-glow"></div>
+            <div class="accretion-ring-outer"></div>
+            <div class="accretion-ring-inner"></div>
+            <div class="singularity-void"></div>
+          </div>
+          <div class="singularity-caption">
+            FIGURE 0.1 // THE UNIFIED EMBEDDING SINGULARITY · CLIP ViT-B/32 JOINT VISION-LANGUAGE SPACE
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1.2: The Narrative Expository (The Problem of Invisibility) -->
+      <section class="narrative-expository-section reveal-editorial">
+        <div class="editorial-rule"></div>
+        <div class="narrative-grid">
+          <div class="narrative-sidebar">
+            <span class="section-numeral">// 01</span>
+            <h2 class="narrative-label">THE ANOMALY OF TEXT BLINDNESS</h2>
+          </div>
+          <div class="narrative-body">
+            <blockquote class="narrative-quote">
+              “When an engineering student or researcher asks how virtual memory is translated through a multi-level page table, conventional sparse and dense text engines score <strong>0.000</strong> recall. The slide pages carrying the answer contain not a single character of indexed text.”
+            </blockquote>
+            <p class="narrative-paragraph">
+              Across 69 technical course volumes comprising the authoritative <em>Operating Systems: Three Easy Pieces</em> (OSTEP) and companion lecture slides, 303 physical slide pages are completely text-invisible. They are dense with diagrams, memory layouts, and state transitions, yet invisible to BM25 and standard embedding transformers.
+            </p>
+            <p class="narrative-paragraph">
+              Project Black Hole resolves this asymmetry through a dual-encoder architecture: projecting both 300-word text blocks and 150-DPI visual diagrams into a shared mathematical coordinate frame, harmonized by reciprocal rank fusion and fine-grained cross-attention reranking.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1.3: Monumental Typographic Metrics -->
+      <section class="metrics-editorial-section reveal-editorial">
+        <div class="editorial-rule"></div>
+        <div class="metrics-header-row">
+          <span class="section-numeral">// 02</span>
+          <span class="metrics-header-title">EMPIRICAL CORPUS ARCHAEOLOGY</span>
+          <span class="metrics-header-meta">ALL METRICS SOURCED FROM ACTIVE INDICES</span>
+        </div>
+
+        <div class="editorial-stats-row">
+          <!-- Stat 1 -->
+          <div class="editorial-stat-block">
+            <div class="stat-number" data-target="69">69</div>
+            <div class="stat-title">VOLUMES INDEXED</div>
+            <div class="stat-meta">47 OSTEP Chapters · 22 Slide Decks</div>
+          </div>
+
+          <!-- Stat 2 -->
+          <div class="editorial-stat-block">
+            <div class="stat-number" data-target="2431">2,431</div>
+            <div class="stat-title">TEXT PASSAGES</div>
+            <div class="stat-meta">300-word sliding windows · BGE-small</div>
+          </div>
+
+          <!-- Stat 3 -->
+          <div class="editorial-stat-block">
+            <div class="stat-number" data-target="843">843</div>
+            <div class="stat-title">DIAGRAM FIGURES</div>
+            <div class="stat-meta">472 Page Renders · 371 Diagrams · CLIP</div>
+          </div>
+
+          <!-- Stat 4 -->
+          <div class="editorial-stat-block">
+            <div class="stat-number" data-target="40">40</div>
+            <div class="stat-title">VERIFIED QUERIES</div>
+            <div class="stat-meta">Dual Annotators · Cohen's &kappa; = 0.812</div>
+          </div>
+
+          <!-- Stat 5 -->
+          <div class="editorial-stat-block highlight-stat">
+            <div class="stat-number" data-target="0.786">0.786</div>
+            <div class="stat-title">FIGURE RECALL@60</div>
+            <div class="stat-meta">vs. 0.000 for pure text baselines</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1.4: The Singularity Sequence (Vertical Pipeline Story) -->
+      <section class="pipeline-narrative-section reveal-editorial">
+        <div class="editorial-rule"></div>
+        <div class="pipeline-header-block">
+          <span class="section-numeral">// 03</span>
+          <h2 class="editorial-section-title">The Singularity Sequence</h2>
+          <p class="editorial-section-sub">
+            A step-by-step account of how a natural-language inquiry navigates dual embedding spaces, ordinal rank fusion, and vision-language synthesis.
+          </p>
+        </div>
+
+        <div class="vertical-pipeline-stream">
+          <div class="pipeline-track-line" aria-hidden="true"></div>
+
+          <!-- Stage 01 -->
+          <article class="pipeline-step-item">
+            <div class="step-marker-col">
+              <span class="step-node"></span>
+              <span class="step-ordinal">01</span>
+            </div>
+            <div class="step-content-col">
+              <span class="step-category">CORPUS DECONSTRUCTION</span>
+              <h3 class="step-heading">Ingestion &amp; Figure Extraction</h3>
+              <p class="step-description">
+                PyMuPDF systematically extracts text blocks bounded into 300-word windows with 50-word overlaps to preserve cross-boundary semantics. Concurrently, all raster illustrations and vector slide compositions are rasterized at 150 DPI.
+              </p>
+              <div class="step-parameters">
+                <span>CHUNK_WORDS: 300</span>
+                <span>OVERLAP: 50</span>
+                <span>DPI: 150</span>
+                <span>TOOL: PyMuPDF</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Stage 02 -->
+          <article class="pipeline-step-item">
+            <div class="step-marker-col">
+              <span class="step-node"></span>
+              <span class="step-ordinal">02</span>
+            </div>
+            <div class="step-content-col">
+              <span class="step-category">REPRESENTATION LEARNING</span>
+              <h3 class="step-heading">Dual-Space Vector Encoding</h3>
+              <p class="step-description">
+                Passages are vectorized into 384-dimensional dense vectors via BAAI/bge-small-en-v1.5. Extracted figures and full slide renders are encoded into a joint 512-dimensional manifold using OpenAI's CLIP ViT-B/32, projecting visual concepts into semantic text reach.
+              </p>
+              <div class="step-parameters">
+                <span>TEXT: BGE-small (384d)</span>
+                <span>VISION: CLIP ViT-B/32 (512d)</span>
+                <span>STORAGE: Chroma DB</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Stage 03 -->
+          <article class="pipeline-step-item">
+            <div class="step-marker-col">
+              <span class="step-node"></span>
+              <span class="step-ordinal">03</span>
+            </div>
+            <div class="step-content-col">
+              <span class="step-category">TRI-MODAL RETRIEVAL</span>
+              <h3 class="step-heading">Parallel Candidate Dispatch</h3>
+              <p class="step-description">
+                Upon query submission, three parallel search paths execute: sparse BM25 keyword matching for exact lexical tokens, dense BGE cosine search for paraphrased concepts, and CLIP visual similarity for diagrammatic alignment.
+              </p>
+              <div class="step-parameters">
+                <span>BM25: ~3.0 ms</span>
+                <span>BGE DENSE: ~9.2 ms</span>
+                <span>CLIP VISUAL: ~18.5 ms</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Stage 04 -->
+          <article class="pipeline-step-item">
+            <div class="step-marker-col">
+              <span class="step-node"></span>
+              <span class="step-ordinal">04</span>
+            </div>
+            <div class="step-content-col">
+              <span class="step-category">RANK HARMONIZATION</span>
+              <h3 class="step-heading">Reciprocal Rank Fusion (RRF)</h3>
+              <p class="step-description">
+                Raw scores across BM25 (unbounded log-odds [0, 30]), BGE cosine [0, 1], and CLIP cross-modal scores [0.15, 0.35] cannot be directly averaged. RRF fuses them purely through ordinal rank positions: <code>RRF(d) = &sum; [w_m / (60 + rank_m(d))]</code>.
+              </p>
+              <div class="step-parameters">
+                <span>K_RRF: 60</span>
+                <span>SCALE: Invariant</span>
+                <span>MERGE TIME: 0.05 ms</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Stage 05 -->
+          <article class="pipeline-step-item">
+            <div class="step-marker-col">
+              <span class="step-node"></span>
+              <span class="step-ordinal">05</span>
+            </div>
+            <div class="step-content-col">
+              <span class="step-category">CROSS-ATTENTION VERIFICATION</span>
+              <h3 class="step-heading">Cross-Encoder Deep Reranking</h3>
+              <p class="step-description">
+                The top 60 shortlist candidates undergo joint cross-attention through BAAI/bge-reranker-base. Every token of the query inspects every token of the candidate passage simultaneously, boosting Top-5 Hit rate from 73.0% to 81.1%.
+              </p>
+              <div class="step-parameters">
+                <span>MODEL: BGE-Reranker-Base</span>
+                <span>CANDIDATES: Top-60</span>
+                <span>HIT@5: 81.1%</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Stage 06 -->
+          <article class="pipeline-step-item">
+            <div class="step-marker-col">
+              <span class="step-node"></span>
+              <span class="step-ordinal">06</span>
+            </div>
+            <div class="step-content-col">
+              <span class="step-category">GROUNDED SYNTHESIS</span>
+              <h3 class="step-heading">Local Vision-Language Generation</h3>
+              <p class="step-description">
+                The final curated package of text passages and high-resolution diagrams is passed to a local vision-language model (Qwen2.5-VL), which writes an empirical response with strict citation accountability.
+              </p>
+              <div class="step-parameters">
+                <span>MODEL: Qwen2.5-VL (Local)</span>
+                <span>TEMPERATURE: 0.0 (Greedy)</span>
+                <span>ZERO CLOUD APIS</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Section 1.5: Cinematic Closing Monograph -->
+      <section class="cinematic-closing-section reveal-editorial" id="cinematic-closing">
+        <div class="editorial-rule"></div>
+        <div class="closing-container">
+          <span class="closing-eyebrow">// CONCLUSION &amp; IMPLICATION</span>
+          <h2 class="closing-title">Beyond the text.</h2>
+          <p class="closing-reflection">
+            Technical documents do not merely describe systems with words. They convey architecture through structure, geometry, and visual reasoning. When our retrieval systems learn to see, the entire corpus awakens.
+          </p>
+          <div class="closing-singularity-art" aria-hidden="true">
+            <div class="closing-ring"></div>
+            <div class="closing-dot"></div>
+          </div>
+          <div class="closing-signoff">
+            <span class="signoff-brand">PROJECT BLACK HOLE 2</span>
+            <span class="signoff-meta">MULTIMODAL DOCUMENT INTELLIGENCE · RESEARCH ARCHIVE</span>
+            <span class="signoff-date">PUBLISHED SEPTEMBER 2026</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ====================================================================
+         VIEW 2: SINGULARITY CONSOLE ("INTERROGATE THE ARCHIVE")
+         ==================================================================== -->
+    <section id="view-playground" class="view-section">
+      <div class="editorial-section-intro">
+        <div class="eyebrow-tag">// RESEARCH INQUIRY SUITE</div>
+        <h1 class="editorial-page-headline">Interrogate the Archive</h1>
+        <p class="editorial-page-sub">
+          Query the 69 course documents across text chunks and visual diagram indices. Observe how architectural figures surface alongside text passages with millisecond stage telemetry.
+        </p>
+      </div>
+
+      <!-- Hero Search Experience -->
+      <div class="inquiry-hero-box">
+        <div class="inquiry-input-wrapper">
+          <input type="text" id="query-input" class="editorial-search-input" placeholder="Ask about page tables, MLFQ gaming, timer interrupts, lock deadlock, inode structure..." autocomplete="off">
+          <button class="editorial-execute-btn" id="btn-launch-query" aria-label="Execute Retrieval Inquiry">
+            <span>Inquire</span>
+            <span class="execute-arrow">→</span>
+          </button>
+        </div>
+
+        <!-- Curated Preset Chips -->
+        <div class="preset-curated-container">
+          <span class="preset-lead-label">CURATED BENCHMARK PROMPTS:</span>
+          <div class="preset-chips-flow">
+            <button class="preset-chip" data-query="How does the operating system regain control of the CPU from a process that is stuck in an infinite loop and never makes a system call?">
+              Timer Interrupt Mechanism [Text]
+            </button>
+            <button class="preset-chip" data-query="What does the page table diagram show?">
+              Page Table Address Translation [Figure]
+            </button>
+            <button class="preset-chip" data-query="How can a process game a multi-level feedback queue scheduler to monopolise the CPU?">
+              MLFQ Queue Gaming [Text]
+            </button>
+            <button class="preset-chip" data-query="Why does NFS cache file data on the client side?">
+              NFS Client Caching [Text]
+            </button>
+            <button class="preset-chip" data-query="Why is average disk seek time usually quoted as one third of the full seek time?">
+              Disk Arm Seek Geometry [Text]
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collapsible Experimental Parameters Panel -->
+      <div class="editorial-controls-panel">
+        <div class="controls-panel-header" id="controls-toggle-btn" role="button" tabindex="0" aria-expanded="true">
+          <span class="panel-header-title">
+            <span class="panel-icon">⚙</span>
+            EXPERIMENTAL PARAMETERS &amp; ENCODER TOPOLOGY
+          </span>
+          <span class="panel-toggle-indicator" id="panel-toggle-indicator">[ Collapse Parameters − ]</span>
+        </div>
+
+        <div class="controls-panel-body" id="controls-panel-body">
+          <!-- Method Picker -->
+          <div class="control-column">
+            <label class="editorial-control-label">RETRIEVAL TOPOLOGY</label>
+            <div class="editorial-method-selector">
+              <div class="method-option selected" data-method="multimodal">
+                <div class="method-header-row">
+                  <span class="method-title">Hybrid + CLIP Images</span>
+                  <span class="method-badge">Recommended</span>
+                </div>
+                <div class="method-note">BM25 + BGE Dense + CLIP ViT-B/32 (30.8 ms)</div>
+              </div>
+
+              <div class="method-option" data-method="full">
+                <div class="method-header-row">
+                  <span class="method-title">Full System (+ Reranker)</span>
+                  <span class="method-badge accent">81.1% Hit</span>
+                </div>
+                <div class="method-note">Hybrid + CLIP + Cross-Encoder Deep Attention</div>
+              </div>
+
+              <div class="method-option" data-method="tuned">
+                <div class="method-header-row">
+                  <span class="method-title">Tuned Adaptive System</span>
+                  <span class="method-badge">Optimum</span>
+                </div>
+                <div class="method-note">Adaptive RRF weights &amp; query visual slotting</div>
+              </div>
+
+              <div class="method-option" data-method="hybrid">
+                <div class="method-header-row">
+                  <span class="method-title">Hybrid (BM25 + Dense)</span>
+                </div>
+                <div class="method-note">Text only · 0.000 figure recall baseline (12.7 ms)</div>
+              </div>
+
+              <div class="method-option" data-method="dense">
+                <div class="method-header-row">
+                  <span class="method-title">Dense Text (BGE-small)</span>
+                </div>
+                <div class="method-note">Bi-encoder text vectors only (9.2 ms)</div>
+              </div>
+
+              <div class="method-option" data-method="bm25">
+                <div class="method-header-row">
+                  <span class="method-title">BM25 (Keyword Baseline)</span>
+                </div>
+                <div class="method-note">Classic keyword lexical frequency (3.0 ms)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Numerical Knobs -->
+          <div class="control-column knobs-column">
+            <div class="knob-group">
+              <div class="knob-header">
+                <span class="knob-label">Evidence Slots (k):</span>
+                <span class="knob-value" id="val-topk">5</span>
+              </div>
+              <input type="range" id="slider-topk" min="3" max="10" value="5" class="editorial-slider">
+              <span class="knob-caption">Final shortlist passages passed to reader</span>
+            </div>
+
+            <div class="knob-group">
+              <div class="knob-header">
+                <span class="knob-label">Max Image Slots:</span>
+                <span class="knob-value" id="val-images">2</span>
+              </div>
+              <input type="range" id="slider-images" min="0" max="5" value="2" class="editorial-slider">
+              <span class="knob-caption">Maximum reserved diagram positions (Ablation optimum: 2)</span>
+            </div>
+
+            <div class="knob-group toggle-group">
+              <div class="toggle-editorial-row">
+                <label for="toggle-generate" class="toggle-text-label">
+                  Local Vision Model Answer Synthesis
+                </label>
+                <label class="editorial-switch">
+                  <input type="checkbox" id="toggle-generate">
+                  <span class="switch-handle"></span>
+                </label>
+              </div>
+              <span class="knob-caption">Local Qwen2.5-VL writes answer citing evidence</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Execution Status Strip -->
+      <div class="telemetry-execution-strip" id="pipeline-stage-bar">
+        <div class="stage-timing-item">
+          <span class="telemetry-dot"></span>
+          <span>Observatory Ready: Submit a query or select a curated prompt above.</span>
+        </div>
+      </div>
+
+      <!-- VLM Answer Box -->
+      <div class="vlm-answer-container" id="vlm-answer-box" style="display:none;"></div>
+
+      <!-- Retrieved Research Evidence Section -->
+      <div class="retrieved-evidence-container">
+        <div class="evidence-header-bar">
+          <h2 class="evidence-header-title" id="results-count-title">
+            Retrieved Research Evidence
+          </h2>
+          <span class="evidence-header-note">GROUNDED PASSAGES &amp; EXTRACTED FIGURES</span>
+        </div>
+
+        <!-- Retrieved Figures Grid -->
+        <div class="retrieved-figures-grid" id="retrieved-figures-grid">
+          <div class="figures-empty-state">
+            <span class="empty-icon">⬡</span>
+            <p>Execute an inquiry above to observe retrieved diagrams and text passages.</p>
+          </div>
+        </div>
+
+        <!-- Retrieved Text Passages -->
+        <div class="retrieved-chunks-list" id="retrieved-chunks-list"></div>
+
+        <!-- Shortlist Ranking Candidates Table -->
+        <div id="shortlist-container"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         VIEW 3: BENCHMARK LAB ("HOW WELL DOES IT SEE?")
+         ==================================================================== -->
+    <section id="view-benchmark" class="view-section">
+      <div class="editorial-section-intro">
+        <div class="eyebrow-tag">// EMPIRICAL EVALUATION SUITE</div>
+        <h1 class="editorial-page-headline">How well does it see?</h1>
+        <p class="editorial-page-sub">
+          A controlled benchmark measuring 40 human-verified queries across 6 architectural iterations. Verifying the empirical leap from 0.000 text-only figure recall to 0.786 multimodal recall.
+        </p>
+      </div>
+
+      <!-- Refined Publication Tabs -->
+      <div class="lab-tab-nav" role="tablist">
+        <button class="lab-tab-btn active" data-lab-tab="leaderboard" role="tab">
+          01 / Leaderboard Matrix
+        </button>
+        <button class="lab-tab-btn" data-lab-tab="ablation" role="tab">
+          02 / Modality Ablation
+        </button>
+        <button class="lab-tab-btn" data-lab-tab="figures" role="tab">
+          03 / Journal Figure Plates
+        </button>
+        <button class="lab-tab-btn" data-lab-tab="questions" role="tab">
+          04 / Verified Query Catalog
+        </button>
+        <button class="lab-tab-btn" data-lab-tab="rigor" role="tab">
+          05 / Methodological Rigor
+        </button>
+      </div>
+
+      <!-- Panel 1: Leaderboard Matrix -->
+      <div class="lab-view-panel active" id="lab-panel-leaderboard" role="tabpanel">
+        <div class="editorial-table-wrapper">
+          <table class="editorial-publication-table">
+            <thead>
+              <tr>
+                <th>ARCHITECTURE SPECIFICATION</th>
+                <th>RECALL@5</th>
+                <th>HIT@5</th>
+                <th>MRR</th>
+                <th>nDCG@10</th>
+                <th>LATENCY</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-table-body">
+              <!-- Dynamically Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel 2: Modality Ablation -->
+      <div class="lab-view-panel" id="lab-panel-ablation" role="tabpanel">
+        <div id="ablation-cards-container">
+          <!-- Dynamically Populated -->
+        </div>
+      </div>
+
+      <!-- Panel 3: Journal Figure Plates (01–09) -->
+      <div class="lab-view-panel" id="lab-panel-figures" role="tabpanel">
+        <div class="figures-intro-text">
+          <p>Scientific visualizations generated by the evaluation analysis pipeline (Click any figure plate to view in full resolution):</p>
+        </div>
+        <div class="figures-gallery-grid" id="research-figures-grid">
+          <!-- Dynamically Populated -->
+        </div>
+      </div>
+
+      <!-- Panel 4: Verified Query Catalog -->
+      <div class="lab-view-panel" id="lab-panel-questions" role="tabpanel">
+        <div class="benchmark-toolbar-editorial">
+          <input type="text" class="editorial-filter-input" id="search-benchmark-input" placeholder="Filter questions by concept, source PDF, or ID...">
+          <div class="filter-pill-cluster">
+            <button class="bench-filter-pill active" data-filter="All">All (40)</button>
+            <button class="bench-filter-pill" data-filter="text">Text (15)</button>
+            <button class="bench-filter-pill" data-filter="figure">Figure (14)</button>
+            <button class="bench-filter-pill" data-filter="both">Both (8)</button>
+            <button class="bench-filter-pill" data-filter="none">Sanity Checks (3)</button>
+          </div>
+        </div>
+
+        <div class="questions-grid" id="benchmark-questions-grid">
+          <!-- Dynamically Populated -->
+        </div>
+      </div>
+
+      <!-- Panel 5: Methodological Rigor & Cohen's Kappa -->
+      <div class="lab-view-panel" id="lab-panel-rigor" role="tabpanel">
+        <div class="arch-editorial-grid">
+          <div class="editorial-article-card">
+            <span class="article-category">INTER-RATER AGREEMENT</span>
+            <h3 class="article-title">Cohen's Kappa Analysis (&kappa; = 0.812)</h3>
+            <div class="monumental-stat-display">&kappa; = 0.812</div>
+            <p class="article-body">
+              To ensure the benchmark questions were objectively categorized by modality, two independent annotators categorized all 40 questions into <em>Text</em>, <em>Figure</em>, <em>Both</em>, or <em>None</em>. The observed agreement Po = 0.875 against chance agreement Pe = 0.334 establishes near-perfect agreement according to the Landis &amp; Koch standard.
+            </p>
+            <div class="math-proof-box">
+              &kappa; = (P_o - P_e) / (1 - P_e) = (0.875 - 0.334) / (1 - 0.334) = 0.812
+            </div>
+          </div>
+
+          <div class="editorial-article-card">
+            <span class="article-category">HYPERPARAMETER TUNING</span>
+            <h3 class="article-title">864 Grid Search Trajectories</h3>
+            <p class="article-body">
+              A comprehensive grid search traversed 864 hyperparameter configurations across RRF smoothing constants (k_rrf &isin; {20, 40, 60, 80}), modality weighting ratios, score cutoffs, and adaptive visual slot allocation thresholds.
+            </p>
+            <div class="math-proof-box">
+              Optimal: k_rrf = 40 · floor = 0.20 · adaptive = True · visual_delta = 0.03
+            </div>
+            <p class="article-subtext">
+              Adaptive slotting checks whether the top candidate's visual score delta exceeds 0.03; if so, it allocates up to 3 image slots, preserving figure recall while lifting text question MRR by +0.003.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         VIEW 4: CORPUS COSMOS ("THE KNOWLEDGE ARCHIVE")
+         ==================================================================== -->
+    <section id="view-dataset" class="view-section">
+      <div class="editorial-section-intro">
+        <div class="eyebrow-tag">// ARTIFACT REPOSITORY</div>
+        <h1 class="editorial-page-headline">The Knowledge Archive</h1>
+        <p class="editorial-page-sub">
+          Explore the 69 Operating Systems source documents (47 OSTEP textbook chapters and 22 lecture slide decks) comprising 2,003 physical pages, 393,258 words, 2,431 indexed text chunks, and 843 structural diagrams.
+        </p>
+      </div>
+
+      <!-- Volume Metric Bar -->
+      <div class="archive-summary-strip">
+        <div class="summary-stat-cell">
+          <span class="cell-label">TOTAL REPOSITORY MASS</span>
+          <span class="cell-value">393,258 Words · 2,003 Pages</span>
+        </div>
+        <div class="summary-stat-cell">
+          <span class="cell-label">OSTEP VOLUMES</span>
+          <span class="cell-value">47 Chapters · 308,007 Words</span>
+        </div>
+        <div class="summary-stat-cell">
+          <span class="cell-label">SLIDE DECKS</span>
+          <span class="cell-value">22 Decks · 85,251 Words</span>
+        </div>
+      </div>
+
+      <!-- Category Filter Bar -->
+      <div class="archive-filter-strip">
+        <div class="filter-pill-cluster">
+          <button class="doc-cat-pill bench-filter-pill active" data-cat="All">All Disciplines (69)</button>
+          <button class="doc-cat-pill bench-filter-pill" data-cat="Virtualization">Virtualization (31)</button>
+          <button class="doc-cat-pill bench-filter-pill" data-cat="Concurrency">Concurrency (14)</button>
+          <button class="doc-cat-pill bench-filter-pill" data-cat="Persistence">Persistence (14)</button>
+          <button class="doc-cat-pill bench-filter-pill" data-cat="Distributed Systems">Distributed (3)</button>
+          <button class="doc-cat-pill bench-filter-pill" data-cat="Security &amp; Systems">Security (7)</button>
+        </div>
+        <input type="text" class="editorial-filter-input" id="search-doc-input" placeholder="Search volumes by chapter or filename...">
+      </div>
+
+      <!-- Documents Grid -->
+      <div class="dataset-grid" id="documents-grid">
+        <!-- Dynamically Populated -->
+      </div>
+
+      <!-- Figure Gallery Plate Section -->
+      <div class="archive-figures-header">
+        <div class="eyebrow-tag">// VISUAL SCHEMATICS</div>
+        <h2 class="editorial-section-title">Diagram &amp; Figure Gallery (843 Images)</h2>
+        <p class="editorial-section-sub">
+          Extracted structural figures embedded via CLIP ViT-B/32. Click any diagram plate to examine in high-resolution detail.
+        </p>
+      </div>
+
+      <div class="retrieved-figures-grid" id="dataset-figures-grid">
+        <!-- Dynamically Populated -->
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         VIEW 5: ARCHITECTURE & ENGINEERING APPENDIX
+         ==================================================================== -->
+    <section id="view-architecture" class="view-section">
+      <div class="editorial-section-intro">
+        <div class="eyebrow-tag">// TECHNICAL APPENDIX</div>
+        <h1 class="editorial-page-headline">System Architecture &amp; Theory</h1>
+        <p class="editorial-page-sub">
+          Mathematical formulations, encoder projection manifolds, scale-invariant rank fusion, and consumer hardware latency profiles.
+        </p>
+      </div>
+
+      <div class="arch-editorial-grid">
+        <!-- Appendix Article 1 -->
+        <article class="editorial-article-card">
+          <span class="article-category">REPRESENTATION THEORY</span>
+          <h3 class="article-title">Joint Vision-Language Manifold</h3>
+          <p class="article-body">
+            Natural language queries and pixel diagrams reside in fundamentally disconnected dimensional spaces. CLIP ViT-B/32 projects both modalities into a shared unit hypersphere via dual contrastive objectives.
+          </p>
+          <div class="math-proof-box">
+            S_{cos}(q, img) = \frac{\mathbf{E}_{text}(q) \cdot \mathbf{E}_{img}(img)}{\|\mathbf{E}_{text}(q)\| \|\mathbf{E}_{img}(img)\|}
+          </div>
+          <p class="article-subtext">
+            Queries such as <em>“What does the page table diagram show?”</em> map into the vector neighborhood of the slide schematic directly, bypassing brittle OCR text recognition.
+          </p>
+        </article>
+
+        <!-- Appendix Article 2 -->
+        <article class="editorial-article-card">
+          <span class="article-category">FUSION MATHEMATICS</span>
+          <h3 class="article-title">Scale-Invariant Reciprocal Rank Fusion</h3>
+          <p class="article-body">
+            BM25 scores follow an unbounded log-odds scale [0, 30]; dense text cosine similarities span [0, 1]; CLIP cross-modal scores concentrate within [0.15, 0.35]. Linear score interpolation causes degenerate mode collapse.
+          </p>
+          <div class="math-proof-box">
+            \text{RRF}(d) = \sum_{m \in M} \frac{w_m}{k_{rrf} + r_m(d)}, \quad k_{rrf} = 60
+          </div>
+          <p class="article-subtext">
+            RRF enforces scale invariance by operating strictly on ordinal rank indices r_m(d), allowing lexical exactness and semantic abstractions to coexist symmetrically.
+          </p>
+        </article>
+
+        <!-- Appendix Article 3 -->
+        <article class="editorial-article-card">
+          <span class="article-category">DEEP VERIFICATION</span>
+          <h3 class="article-title">Cross-Attention Self-Verification</h3>
+          <p class="article-body">
+            While bi-encoders compute representations in isolation for extreme speed, cross-encoders compute all-to-all attention between query tokens and candidate tokens simultaneously.
+          </p>
+          <div class="math-proof-box">
+            \text{Score}(q, d) = \text{MLP}(\text{CrossAttention}([\text{CLS}], q_1..q_n, [\text{SEP}], d_1..d_m))
+          </div>
+          <p class="article-subtext">
+            Running cross-encoders across all 2,431 chunks is prohibitive (~14s on CPU). By gating the cross-encoder strictly to the top-60 shortlist, execution finishes in ~1.0s while achieving 81.1% Hit@5.
+          </p>
+        </article>
+
+        <!-- Appendix Article 4 -->
+        <article class="editorial-article-card">
+          <span class="article-category">ENGINEERING ARCHITECTURE</span>
+          <h3 class="article-title">Offline Ingestion vs. Online Query</h3>
+          <p class="article-body">
+            The system adheres to a strict two-phase boundary. Compute-intensive vector generation runs once ahead of time; live user inquiries execute in milliseconds on standard consumer CPUs without paid cloud APIs.
+          </p>
+          <div class="math-proof-box">
+            \text{Total Query Latency} = t_{BM25} (3ms) + t_{BGE} (9ms) + t_{CLIP} (18ms) + t_{RRF} (0.05ms) \approx 30.8ms
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Institutional Editorial Footer -->
+    <footer class="editorial-footer">
+      <div class="footer-top-row">
+        <div class="footer-brand-col">
+          <span class="footer-brand-title">PROJECT BLACK HOLE 2</span>
+          <span class="footer-brand-desc">Multimodal Document Intelligence Monograph · Operating Systems Course Literature</span>
+        </div>
+        <div class="footer-meta-col">
+          <span class="footer-meta-item">69 Volumes Indexed</span>
+          <span class="footer-meta-item">2,431 Text Chunks</span>
+          <span class="footer-meta-item">843 Diagram Figures</span>
+          <span class="footer-meta-item">Local Inference · Zero Paid APIs</span>
+        </div>
+      </div>
+      <div class="footer-bottom-row">
+        <span>A Deep-Space Scientific Research Presentation</span>
+        <span class="footer-coords">LATENCY PROFILE: 3.0ms BM25 · 9.2ms BGE · 30.8ms CLIP</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Figure Detail Lightbox Modal -->
+  <div class="modal-overlay" id="image-modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title-element">Figure Schematic Detail</div>
+        <button class="modal-close-btn" id="modal-close-btn" aria-label="Close Lightbox Modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img id="modal-img-element" src="" alt="Course Diagram Detail">
+        <div class="modal-caption" id="modal-caption-element"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Bridge & Client Logic -->
+  <script src="data_bridge.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

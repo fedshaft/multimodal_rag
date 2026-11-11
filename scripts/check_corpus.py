@@ -20,6 +20,7 @@ import pymupdf
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import config  # noqa: E402
+from ingest.pdf_parser import _drawn_images, _template_xrefs  # noqa: E402
 
 TARGET_DOCS = 30
 TARGET_FIGURES = 60      # roughly two usable figures per document
@@ -29,8 +30,11 @@ MIN_PX = config.MIN_IMAGE_PIXELS
 def survey(path: Path) -> dict:
     """Count pages, words and non-trivial embedded images in one PDF."""
     doc = pymupdf.open(path)
+    template = _template_xrefs(doc)
+    seen: set[int] = set()
     words = 0
     figures = 0
+    vector = 0
     tiny = 0
     text_pages = 0
     for page in doc:
@@ -38,18 +42,36 @@ def survey(path: Path) -> dict:
         words += len(text.split())
         if len(text.split()) > 30:
             text_pages += 1
-        for img in page.get_images(full=True):
-            # img: (xref, smask, width, height, bpc, colorspace, ...)
-            if img[2] >= MIN_PX and img[3] >= MIN_PX:
-                figures += 1
-            else:
+        n_embedded = 0
+        for img in _drawn_images(page):
+            # Count exactly what pdf_parser will keep, so the gate and the
+            # parser can never disagree again.
+            if img["xref"] in template:
                 tiny += 1
+            elif img["xref"] in seen:
+                continue
+            else:
+                seen.add(img["xref"])
+                figures += 1
+                n_embedded += 1
+        # A diagram drawn as lines and shapes is invisible to get_images().
+        # pdf_parser._should_render_page renders those pages instead, so the
+        # gate has to count them or it under-reports a figure-rich collection
+        # (OSTEP is entirely vector: 754 pages, 0 embedded rasters, ~200
+        # real diagrams).
+        if n_embedded == 0:
+            try:
+                if len(page.get_drawings()) >= config.MIN_VECTOR_DRAWINGS:
+                    vector += 1
+            except Exception:
+                pass
     n_pages = doc.page_count
     doc.close()
     return {
         "pages": n_pages,
         "words": words,
         "figures": figures,
+        "vector": vector,
         "tiny": tiny,
         "text_pages": text_pages,
     }
@@ -62,10 +84,11 @@ def main() -> int:
         print("Put 30-50 PDFs on one topic there, then re-run this.")
         return 1
 
-    print(f"{'document':<44} {'pages':>6} {'words':>8} {'figures':>8}")
+    print(f"{'document':<40} {'pages':>6} {'words':>8} {'raster':>7} {'vector':>7}")
     print("-" * 70)
 
-    totals = {"pages": 0, "words": 0, "figures": 0, "tiny": 0, "text_pages": 0}
+    totals = {"pages": 0, "words": 0, "figures": 0, "vector": 0, "tiny": 0,
+              "text_pages": 0}
     figure_poor = []
     scanned = []
 
@@ -77,9 +100,10 @@ def main() -> int:
             continue
         for k in totals:
             totals[k] += s[k]
-        name = p.name if len(p.name) <= 43 else p.name[:40] + "..."
-        print(f"{name:<44} {s['pages']:>6} {s['words']:>8} {s['figures']:>8}")
-        if s["figures"] == 0:
+        name = p.name if len(p.name) <= 39 else p.name[:36] + "..."
+        print(f"{name:<40} {s['pages']:>6} {s['words']:>8} {s['figures']:>7} "
+              f"{s['vector']:>7}")
+        if s["figures"] + s["vector"] == 0:
             figure_poor.append(p.name)
         # Lots of pages, almost no extractable text = scanned images of text.
         if s["pages"] >= 3 and s["text_pages"] / s["pages"] < 0.25:
@@ -87,10 +111,10 @@ def main() -> int:
 
     n = len(pdfs)
     print("-" * 70)
-    print(f"{'TOTAL ' + str(n) + ' documents':<44} {totals['pages']:>6} "
-          f"{totals['words']:>8} {totals['figures']:>8}")
-    print(f"\n(also skipped {totals['tiny']} images under {MIN_PX}px — logos, "
-          f"icons, bullets)")
+    print(f"{'TOTAL ' + str(n) + ' documents':<40} {totals['pages']:>6} "
+          f"{totals['words']:>8} {totals['figures']:>7} {totals['vector']:>7}")
+    print(f"\n(also skipped {totals['tiny']} template images repeated on many "
+          f"pages — deck logos, footers)")
 
     print("\n" + "=" * 70)
     ok = True
@@ -101,8 +125,9 @@ def main() -> int:
     else:
         print(f"OK: {n} documents.")
 
-    if totals["figures"] < TARGET_FIGURES:
-        print(f"PROBLEM: only {totals['figures']} usable figures across the whole "
+    usable = totals["figures"] + totals["vector"]
+    if usable < TARGET_FIGURES:
+        print(f"PROBLEM: only {usable} usable figures across the whole "
               f"collection (want {TARGET_FIGURES}+).")
         print("  The multimodal comparison needs figure-answerable questions, and")
         print("  there are not enough figures here to write ~10-15 of them.")
@@ -110,13 +135,15 @@ def main() -> int:
         print("  standalone images into data/own/ alongside the PDFs.")
         ok = False
     else:
-        print(f"OK: {totals['figures']} usable figures — enough for figure questions.")
+        print(f"OK: {usable} usable figures ({totals['figures']} embedded rasters, "
+              f"{totals['vector']} vector-diagram pages) — enough for figure "
+              f"questions.")
 
     if figure_poor:
         shown = ", ".join(figure_poor[:6])
         more = f" (+{len(figure_poor) - 6} more)" if len(figure_poor) > 6 else ""
-        print(f"\nNote: {len(figure_poor)} documents have no embedded figures at all: "
-              f"{shown}{more}")
+        print(f"\nNote: {len(figure_poor)} documents have no figures of either "
+              f"kind: {shown}{more}")
 
     if scanned:
         print(f"\nNote: these look scanned (little extractable text): "

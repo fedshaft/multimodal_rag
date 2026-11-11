@@ -1,0 +1,445 @@
+{
+  "_about": {
+    "purpose": "The labelled question set. Retrieval is scored by whether it returns the ids in relevant_ids; the system never sees this file at query time.",
+    "schema": "question | relevant_ids | answer_type (text|figure|both|none) | verify | note",
+    "verify": "Human-readable location of the answer. Open that page and check the key before trusting any number computed from this file.",
+    "note": "What the answer actually is, so a reviewer can check the key without re-reading the whole page.",
+    "status": "VERIFIED 2026-09-10. Keys independently checked by a second person against the source PDFs; 8 questions corrected or extended (q08, q09, q11, q12, q13, q15, q23, q24). q08's p.16 suggestion was examined and deliberately not applied \u2014 see its note. Answer-type labels were separately labelled by two annotators; see eval/results/kappa_report.txt.",
+    "page_renders": "Where a slide figure also has a whole-page render of the same page, both ids are listed: both genuinely contain the answer, and scoring only the crop would penalise a correct retrieval.",
+    "counts": "40 questions \u2014 8 both, 14 figure, 3 none, 15 text",
+    "key_convention": "relevant_ids lists EVERY piece of evidence that independently supports the answer, so recall@k is 'what share of the supporting evidence did we surface' and hit@k is 'did we surface any of it'. Both are reported; hit@k is the fairer headline for figure questions, where a cropped figure and its whole-page render are two ids for one answer."
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "question": "How does the operating system regain control of the CPU from a process that is stuck in an infinite loop and never makes a system call?",
+      "relevant_ids": [
+        "cpu_mechanisms_chunk_13"
+      ],
+      "answer_type": "text",
+      "verify": "cpu-mechanisms.pdf p.8",
+      "note": "A timer interrupt. The timer is programmed to raise an interrupt every few milliseconds; the running process is halted and a pre-configured OS handler runs."
+    },
+    {
+      "id": "q02",
+      "question": "In round-robin scheduling, what constrains how long a time slice can be?",
+      "relevant_ids": [
+        "cpu_sched_chunk_11"
+      ],
+      "answer_type": "text",
+      "verify": "cpu-sched.pdf p.7",
+      "note": "The time slice must be a multiple of the timer-interrupt period."
+    },
+    {
+      "id": "q03",
+      "question": "How can a process game a multi-level feedback queue scheduler to monopolise the CPU?",
+      "relevant_ids": [
+        "cpu_sched_mlfq_chunk_8"
+      ],
+      "answer_type": "text",
+      "verify": "cpu-sched-mlfq.pdf p.6",
+      "note": "Issue an I/O operation just before the allotment is used up (e.g. after running 99% of it), which relinquishes the CPU but keeps the job in the same queue."
+    },
+    {
+      "id": "q04",
+      "question": "Why does NFS cache file data on the client side?",
+      "relevant_ids": [
+        "dist_nfs_chunk_18"
+      ],
+      "answer_type": "text",
+      "verify": "dist-nfs.pdf p.11",
+      "note": "Sending every read and write across the network is slow compared with local memory or disk. The first access is expensive, later ones are served from client memory; the cache also buffers writes."
+    },
+    {
+      "id": "q05",
+      "question": "Why is average disk seek time usually quoted as one third of the full seek time?",
+      "relevant_ids": [
+        "file_disks_chunk_16"
+      ],
+      "answer_type": "text",
+      "verify": "file-disks.pdf p.9",
+      "note": "It comes from average seek *distance*, not time: integrating |x-y| over all track pairs and dividing by N^2 gives N/3, i.e. one third of the full distance."
+    },
+    {
+      "id": "q06",
+      "question": "In the SEER traces, what fraction of file accesses were to the same file or to a file in the same directory?",
+      "relevant_ids": [
+        "file_ffs_chunk_15"
+      ],
+      "answer_type": "text",
+      "verify": "file-ffs.pdf p.8",
+      "note": "Nearly 40%. Another ~25% were at a distance of two, which FFS does not capture."
+    },
+    {
+      "id": "q07",
+      "question": "How does XFS store directories, and why is that faster than a simple linear list?",
+      "relevant_ids": [
+        "file_implementation_chunk_17"
+      ],
+      "answer_type": "text",
+      "verify": "file-implementation.pdf p.9",
+      "note": "In B-tree form. File creation must check the name does not already exist, and a linear list has to be scanned in its entirety."
+    },
+    {
+      "id": "q08",
+      "question": "Why is the system call that removes a file called unlink() rather than remove or delete?",
+      "relevant_ids": [
+        "file_intro_chunk_36",
+        "file_intro_chunk_37",
+        "file_intro_chunk_38"
+      ],
+      "answer_type": "text",
+      "verify": "file-intro.pdf p.19-20 (section 39.14 Hard Links)",
+      "note": "Because a file name is only a link to an inode. unlink() removes the name and decrements the inode's reference (link) count; the file's data is freed only when that count reaches zero. CORRECTED 2026-09-10: the key first pointed at file_intro_chunk_30 (p.16), which only *poses* the puzzle and defers the answer \u2014 a genuine wrong key, caught on review.  VERIFIER said pp.16,19,20. pp.19-20 accepted. p.16 deliberately NOT included: re-read, it only poses the puzzle and defers ('we must first understand ... directories'), so retrieving it would not let you answer. Flagged for the user to arbitrate."
+    },
+    {
+      "id": "q09",
+      "question": "How does adding a checksum to the begin and end blocks of a journal transaction improve write performance?",
+      "relevant_ids": [
+        "file_journaling_chunk_18",
+        "file_journaling_page_p10"
+      ],
+      "answer_type": "both",
+      "verify": "file-journaling.pdf p.10 \u2014 the Aside plus the two journal-layout diagrams",
+      "note": "The file system can write the whole transaction at once instead of waiting for the begin block and contents to complete, avoiding an extra disk rotation. On recovery a checksum mismatch means the transaction is discarded. Shipped in Linux ext4.  RETAGGED text->both: both annotators independently said a figure is needed. Checked by opening the page render \u2014 p.10 does carry the TxB|I[v2]|B[v2]|Db (|TxE) journal diagrams showing the two-step write. They were right."
+    },
+    {
+      "id": "q10",
+      "question": "What random write bandwidth does a mirrored RAID-1 array deliver, and why?",
+      "relevant_ids": [
+        "file_raid_chunk_19"
+      ],
+      "answer_type": "text",
+      "verify": "file-raid.pdf p.10",
+      "note": "N/2 * R MB/s. Each logical write becomes two physical writes, so although all disks are busy the client perceives half the available bandwidth."
+    },
+    {
+      "id": "q11",
+      "question": "In a block-level FTL, how does an SSD translate a read of logical address 2002?",
+      "relevant_ids": [
+        "file_ssd_chunk_25",
+        "file_ssd_chunk_26",
+        "file_ssd_page_p13"
+      ],
+      "answer_type": "both",
+      "verify": "file-ssd.pdf p.13-14 \u2014 read walkthrough plus the block/page/state diagram",
+      "note": "Extract the chunk number (500) from the top bits, look it up in the mapping table (finding 4), then add the offset from the logical address (2), giving physical page 6.  CORRECTED: verifier pointed at p.14 and was right that the sentence continues there ('The resulting physical-page address (6) is' breaks at the page boundary), so chunk_26 added. Also RETAGGED text->both: p.13 carries the Table/Block/Page/Content/State diagram, which both annotators independently judged necessary. Confirmed by opening the page render."
+    },
+    {
+      "id": "q12",
+      "question": "How can pthread_mutex_trylock() be used to build a deadlock-free lock acquisition protocol?",
+      "relevant_ids": [
+        "threads_bugs_chunk_13",
+        "threads_bugs_chunk_15"
+      ],
+      "answer_type": "text",
+      "verify": "threads-bugs.pdf p.9-10",
+      "note": "Grab L1, then trylock L2; if trylock fails, release L1 and jump back to the top and retry. This avoids holding one lock while blocking on another.  CORRECTED: verifier noted the answer continues onto p.10."
+    },
+    {
+      "id": "q13",
+      "question": "Why must a thread waiting on a condition variable re-check the condition in a while loop rather than an if?",
+      "relevant_ids": [
+        "threads_cv_chunk_15",
+        "threads_cv_chunk_16",
+        "threads_cv_chunk_22"
+      ],
+      "answer_type": "text",
+      "verify": "threads-cv.pdf p.9-10 (broken `if` + Mesa semantics; 'While, Not If') and p.14 (TIP: USE WHILE (NOT IF) FOR CONDITIONS)",
+      "note": "Under Mesa semantics being woken is only a hint; the woken thread re-checks the shared state with the lock held and goes back to sleep if the condition still does not hold. Virtually every system uses Mesa semantics.  CORRECTED: verifier identified three locations \u2014 the broken `if` case and Mesa semantics on pp.9-10, the fix on p.10, and the TIP restating it (plus spurious wakeups) on p.14."
+    },
+    {
+      "id": "q14",
+      "question": "What sequence of x86 instructions does incrementing a shared counter compile to, and why does that cause a race condition?",
+      "relevant_ids": [
+        "threads_intro_chunk_13"
+      ],
+      "answer_type": "text",
+      "verify": "threads-intro.pdf p.9",
+      "note": "mov (load into eax), add $0x1, mov (store back). A timer interrupt between the load and the store lets a second thread read the same stale value, so one increment is lost."
+    },
+    {
+      "id": "q15",
+      "question": "How does a ticket lock use fetch-and-add, and what does it guarantee that earlier lock attempts do not?",
+      "relevant_ids": [
+        "threads_locks_chunk_23",
+        "threads_locks_chunk_25"
+      ],
+      "answer_type": "text",
+      "verify": "threads-locks.pdf p.13 (prose) and p.14 (Figure 28.7, the C code)",
+      "note": "A thread atomically fetch-and-adds the ticket value to get its turn; it enters when myturn == lock->turn, and unlock increments turn. Unlike earlier attempts it ensures progress for all threads.  CORRECTED: verifier noted the implementation is Figure 28.7 on p.14."
+    },
+    {
+      "id": "q16",
+      "question": "How can a producer/consumer solution built with semaphores deadlock?",
+      "relevant_ids": [
+        "threads_sema_chunk_18"
+      ],
+      "answer_type": "text",
+      "verify": "threads-sema.pdf p.10",
+      "note": "The consumer acquires the binary mutex then blocks in sem_wait on full while still holding the lock; the producer then blocks on the mutex. Each waits for the other."
+    },
+    {
+      "id": "q17",
+      "question": "What does an allocation library do when the heap runs out of space?",
+      "relevant_ids": [
+        "vm_freespace_chunk_15"
+      ],
+      "answer_type": "text",
+      "verify": "vm-freespace.pdf p.11",
+      "note": "Either fail and return NULL, or request more memory from the OS with a system call such as sbrk; the OS finds free physical pages, maps them into the address space and returns the new end of the heap."
+    },
+    {
+      "id": "q18",
+      "question": "According to the process state diagram, what event moves a process from the waiting state back to ready?",
+      "relevant_ids": [
+        "slides_ch3_img_p9_0",
+        "slides_ch3_page_p9"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch3.pdf p.9 \u2014 five-state process diagram",
+      "note": "I/O or event completion. The diagram shows new -> ready (admitted), ready -> running (scheduler dispatch), running -> ready (interrupt), running -> waiting (I/O or event wait), waiting -> ready (I/O or event completion), running -> terminated (exit)."
+    },
+    {
+      "id": "q19",
+      "question": "In the diagram of a process's memory layout, which section sits at the highest addresses and which grows downward?",
+      "relevant_ids": [
+        "slides_ch3_img_p6_0",
+        "slides_ch3_page_p6"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch3.pdf p.6 \u2014 process memory layout",
+      "note": "From max down to 0: stack (highest, grows downward), then free space with arrows pointing toward each other, then heap (grows upward), then data, then text at address 0."
+    },
+    {
+      "id": "q20",
+      "question": "Which part of a C program's memory does a malloc'd array live in, and where do argc and argv sit?",
+      "relevant_ids": [
+        "slides_ch3_img_p7_0",
+        "slides_ch3_page_p7"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch3.pdf p.7 \u2014 C program mapped onto memory regions",
+      "note": "The malloc'd array is on the heap; argc/argv are at the top of high memory above the stack. The figure also maps int x to uninitialized data and int y = 15 to initialized data."
+    },
+    {
+      "id": "q21",
+      "question": "What does a single-threaded process have exactly one of that a multithreaded process has several of?",
+      "relevant_ids": [
+        "slides_ch4_img_p5_0",
+        "slides_ch4_page_p5"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch4.pdf p.5 \u2014 single-threaded vs multithreaded process",
+      "note": "Registers, stack and program counter \u2014 one set per thread. Code, data and files are shared across all threads in both cases."
+    },
+    {
+      "id": "q22",
+      "question": "In the multithreaded server diagram, what does the server do immediately after creating a thread to service a request?",
+      "relevant_ids": [
+        "slides_ch4_img_p6_0",
+        "slides_ch4_page_p6"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch4.pdf p.6 \u2014 multithreaded server architecture",
+      "note": "It resumes listening for additional client requests (step 3), rather than waiting for the new thread to finish."
+    },
+    {
+      "id": "q23",
+      "question": "What are the components of a monitor, and where do threads wait before they can enter it?",
+      "relevant_ids": [
+        "slides_ch6_img_p43_0",
+        "slides_ch6_page_p43",
+        "slides_ch6_img_p46_0",
+        "slides_ch6_page_p46"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch6.pdf p.43 (schematic view of a monitor) and p.46 (monitor with condition variables \u2014 the x, y wait queues)",
+      "note": "Shared data at the top, a set of operations in the middle, initialization code at the bottom. Threads queue outside in the entry queue.  EXTENDED: verifier noted p.46 shows where threads wait on condition variables, which the second half of the question asks about. p.43 alone only shows the entry queue."
+    },
+    {
+      "id": "q24",
+      "question": "In the resource-allocation graph, which resource has instances that are all still free?",
+      "relevant_ids": [
+        "slides_ch8_img_p8_0",
+        "slides_ch8_img_p9_0",
+        "slides_ch8_page_p9"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch8.pdf p.8 (printed 8.8, 'Resource Allocation Graph Example') and p.9 (printed 8.9, '...with a Deadlock'). R4 is unclaimed in both.",
+      "note": "R4 \u2014 it is drawn with three instances (dots) and no edges to any thread. R1 and R3 have one instance each assigned, and R2 has two instances with edges to T1 and T2.  CORRECTED: the key pointed only at p.9, the deadlock graph. The verifier cited printed slide 8.8 = PDF p.8, the canonical example graph. R4's three instances are free in both figures, so both are relevant."
+    },
+    {
+      "id": "q25",
+      "question": "At which stages can a user program be bound to memory addresses, from source program through to execution?",
+      "relevant_ids": [
+        "slides_ch9_img_p9_0",
+        "slides_ch9_page_p9"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch9.pdf p.9 \u2014 multistep processing of a user program",
+      "note": "Compile time (compiler/assembler produces an object module), load time (linkage editor then loader, pulling in other object modules and system libraries), and execution time (dynamic linking of dynamically loaded system libraries into the in-memory binary image)."
+    },
+    {
+      "id": "q26",
+      "question": "In the hardware address-protection diagram, what happens when a logical address is not less than the limit register?",
+      "relevant_ids": [
+        "slides_ch9_img_p18_0",
+        "slides_ch9_page_p18"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch9.pdf p.18 \u2014 limit and relocation register diagram",
+      "note": "It traps with an addressing error. If the comparison succeeds, the relocation register is added to produce the physical address sent to memory."
+    },
+    {
+      "id": "q27",
+      "question": "In the typical PC bus structure, what connects the disks to the rest of the system?",
+      "relevant_ids": [
+        "slides_ch12_img_p7_0",
+        "slides_ch12_page_p7"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch12.pdf p.7 \u2014 PC bus structure",
+      "note": "A SAS controller, which hangs off the PCIe bus and has four disks attached. The keyboard and USB ports hang off a separate expansion bus via the expansion bus interface."
+    },
+    {
+      "id": "q28",
+      "question": "In the interrupt-driven I/O cycle, at what point does the CPU check for interrupts?",
+      "relevant_ids": [
+        "slides_ch12_img_p13_0",
+        "slides_ch12_page_p13"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch12.pdf p.13 \u2014 interrupt-driven I/O cycle, 7 numbered steps",
+      "note": "Between instructions, while executing. The cycle runs: device driver initiates I/O, controller initiates I/O, input ready/output complete generates an interrupt signal, CPU transfers control to the interrupt handler, the handler processes data and returns, and the CPU resumes the interrupted task."
+    },
+    {
+      "id": "q29",
+      "question": "Which file types are listed with the extensions arc, zip and tar, and what is their function?",
+      "relevant_ids": [
+        "slides_ch13_img_p13_0",
+        "slides_ch13_page_p13"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch13.pdf p.13 \u2014 file types table",
+      "note": "Archive \u2014 related files grouped into one file, sometimes compressed, for archiving or storage."
+    },
+    {
+      "id": "q30",
+      "question": "What are the layers of the file system, from application programs down to the devices?",
+      "relevant_ids": [
+        "slides_ch14_img_p5_0",
+        "slides_ch14_page_p5"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch14.pdf p.5 \u2014 layered file system",
+      "note": "application programs -> logical file system -> file-organization module -> basic file system -> I/O control -> devices."
+    },
+    {
+      "id": "q31",
+      "question": "Where do system calls sit in relation to the user interface and the operating system's services?",
+      "relevant_ids": [
+        "slides_ch2_img_p7_0",
+        "slides_ch2_page_p7"
+      ],
+      "answer_type": "figure",
+      "verify": "slides_ch2.pdf p.7 \u2014 view of operating system services",
+      "note": "System calls form the layer between the user interfaces (GUI, touch screen, command line) above and the OS services below (program execution, I/O operations, file systems, communication, resource allocation, accounting, error detection, protection and security). Hardware sits at the bottom."
+    },
+    {
+      "id": "q32",
+      "question": "What shape does the distribution of CPU burst durations have?",
+      "relevant_ids": [
+        "slides_ch5_chunk_3",
+        "slides_ch5_img_p5_0",
+        "slides_ch5_page_p5"
+      ],
+      "answer_type": "both",
+      "verify": "slides_ch5.pdf p.5 \u2014 histogram of CPU-burst durations",
+      "note": "A large peak at short bursts that falls away sharply, then a long flat tail of infrequent long bursts. The curve is plotted as frequency against burst duration."
+    },
+    {
+      "id": "q33",
+      "question": "How does exponential averaging predict the next CPU burst, and what happens to the prediction when actual bursts jump from 4 to 13?",
+      "relevant_ids": [
+        "slides_ch5_chunk_15",
+        "slides_ch5_img_p17_0",
+        "slides_ch5_page_p17"
+      ],
+      "answer_type": "both",
+      "verify": "slides_ch5.pdf p.17 \u2014 prediction of the length of the next CPU burst",
+      "note": "The guess tau_i tracks the actual bursts t_i with a lag. In the plotted example bursts run 6, 4, 6, 4, 13, 13, 13 and the guesses run 10, 8, 6, 6, 5, 9, 11, 12 \u2014 the prediction climbs gradually toward 13 rather than jumping."
+    },
+    {
+      "id": "q34",
+      "question": "How can virtual memory be larger than physical memory, and where do the pages that do not fit reside?",
+      "relevant_ids": [
+        "slides_ch10_chunk_5",
+        "slides_ch10_img_p7_0",
+        "slides_ch10_page_p7"
+      ],
+      "answer_type": "both",
+      "verify": "slides_ch10.pdf p.7 \u2014 virtual memory larger than physical memory",
+      "note": "A memory map translates virtual pages to physical frames; pages that do not fit live in the backing store on disk and are moved in and out as needed."
+    },
+    {
+      "id": "q35",
+      "question": "What does the valid-invalid bit in a page table entry indicate under demand paging?",
+      "relevant_ids": [
+        "slides_ch10_chunk_11",
+        "slides_ch10_img_p14_0",
+        "slides_ch10_page_p14"
+      ],
+      "answer_type": "both",
+      "verify": "slides_ch10.pdf p.14 \u2014 page table when some pages are not in main memory",
+      "note": "v means the page is in physical memory and the frame number is valid; i means it is not resident and lives in the backing store. In the figure pages A, C and F map to frames 4, 6 and 9 and are marked v; the rest are marked i."
+    },
+    {
+      "id": "q36",
+      "question": "For the request queue 98, 183, 37, 122, 14, 124, 65, 67 with the head starting at 53, how does FCFS disk scheduling move the head?",
+      "relevant_ids": [
+        "slides_ch11_chunk_15",
+        "slides_ch11_img_p19_0",
+        "slides_ch11_page_p19"
+      ],
+      "answer_type": "both",
+      "verify": "slides_ch11.pdf p.19 \u2014 FCFS disk scheduling",
+      "note": "Strictly in arrival order: 53 -> 98 -> 183 -> 37 -> 122 -> 14 -> 124 -> 65 -> 67, which the figure draws as a wide zig-zag across the whole cylinder range."
+    },
+    {
+      "id": "q37",
+      "question": "What are the process states in OSTEP's state transition diagram, and what moves a process out of the blocked state?",
+      "relevant_ids": [
+        "cpu_intro_chunk_9",
+        "cpu_intro_page_p6"
+      ],
+      "answer_type": "both",
+      "verify": "cpu-intro.pdf p.6 \u2014 Figure 4.2, Process: State Transitions",
+      "note": "Running, ready and blocked. A process blocks on an operation such as an I/O request and returns to ready when the event completes. Moving ready->running is being scheduled; running->ready is being descheduled."
+    },
+    {
+      "id": "q38",
+      "question": "How do I train a convolutional neural network to classify images in PyTorch?",
+      "relevant_ids": [],
+      "answer_type": "none",
+      "verify": "Not in the collection \u2014 'pytorch', 'convolutional' and 'neural network' appear in 0 of the 69 documents (checked 2026-09-10).",
+      "note": "Correct behaviour is to answer that the documents do not cover this. Any confident answer is a hallucination from world knowledge."
+    },
+    {
+      "id": "q39",
+      "question": "Which Git command rebases a feature branch onto main?",
+      "relevant_ids": [],
+      "answer_type": "none",
+      "verify": "Not in the collection \u2014 'rebase' appears in 0 of the 69 documents (checked 2026-09-10).",
+      "note": "Correct behaviour is to decline. Plausible-sounding for a CS corpus, which is the point."
+    },
+    {
+      "id": "q40",
+      "question": "What is the recommended daily intake of vitamin D for adults?",
+      "relevant_ids": [],
+      "answer_type": "none",
+      "verify": "Not in the collection \u2014 'vitamin' appears in 0 of the 69 documents (checked 2026-09-10).",
+      "note": "Obviously out of domain. Included as the easy case: if the system answers even this, the refusal behaviour is broken outright."
+    }
+  ]
+}

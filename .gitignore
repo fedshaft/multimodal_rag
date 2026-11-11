@@ -4,6 +4,11 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+*.safetensors
+*.bin
+*.pt
+*.onnx
+checkpoints/
 
 # --- Project data -----------------------------------------------------
 # Source PDFs, extracted figures, page renders and the Chroma vector store.
@@ -27,3 +32,9 @@ PLAN.md
 .idea/
 .vscode/
 *.swp
+
+# --- Frontend data bundle ---------------------------------------------
+# Embeds raw slide/textbook text (chunks_map) for the offline UI. Same reason
+# as data/: not ours to redistribute. Copy it in locally; app.js falls back
+# to an empty dataset when it is missing.
+web/data_bridge.js
