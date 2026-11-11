@@ -431,18 +431,18 @@
           <div class="control-column">
             <label class="editorial-control-label">RETRIEVAL TOPOLOGY</label>
             <div class="editorial-method-selector">
-              <div class="method-option selected" data-method="multimodal">
+              <div class="method-option" data-method="multimodal">
                 <div class="method-header-row">
                   <span class="method-title">Hybrid + CLIP Images</span>
-                  <span class="method-badge">Recommended</span>
+                  <span class="method-badge">Fastest multimodal</span>
                 </div>
                 <div class="method-note">BM25 + BGE Dense + CLIP ViT-B/32 (30.8 ms)</div>
               </div>
 
-              <div class="method-option" data-method="full">
+              <div class="method-option selected" data-method="full">
                 <div class="method-header-row">
                   <span class="method-title">Full System (+ Reranker)</span>
-                  <span class="method-badge accent">81.1% Hit</span>
+                  <span class="method-badge accent">Recommended · 81.1% Hit</span>
                 </div>
                 <div class="method-note">Hybrid + CLIP + Cross-Encoder Deep Attention</div>
               </div>
@@ -450,7 +450,7 @@
               <div class="method-option" data-method="tuned">
                 <div class="method-header-row">
                   <span class="method-title">Tuned Adaptive System</span>
-                  <span class="method-badge">Optimum</span>
+                  <span class="method-badge">Best MRR</span>
                 </div>
                 <div class="method-note">Adaptive RRF weights &amp; query visual slotting</div>
               </div>

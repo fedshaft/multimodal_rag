@@ -20,7 +20,7 @@
   const state = {
     activeView: 'mission',
     activeLabTab: 'leaderboard',
-    selectedMethod: 'multimodal',
+    selectedMethod: 'full',
     topK: 5,
     maxImages: 2,
     doGenerate: false,
@@ -343,16 +343,24 @@
           generate: state.doGenerate
         })
       });
-      if (resp.ok) {
-        payload = await resp.json();
+      payload = await resp.json();
+      if (!resp.ok || payload.error) {
+        // The backend is up but the search failed: show the real error rather
+        // than quietly substituting cached results.
+        if (stageBar) {
+          stageBar.innerHTML = `<span style="color:#ff6b6b; font-weight:700;">Search failed: ${payload.error || ('HTTP ' + resp.status)}</span>`;
+        }
+        return;
       }
     } catch (err) {
-      // Backend not running or offline; fall back to high-fidelity client simulation
+      // Backend not reachable (e.g. the page was opened as a plain file).
+      payload = null;
     }
 
-    // 2. Fallback / Client Simulation using DATA bridge
+    // 2. Offline fallback: replay cached evaluation results, clearly labelled.
     if (!payload) {
       payload = simulateRetrieval(query, state.selectedMethod, state.topK, state.maxImages, state.doGenerate);
+      payload.offline = true;
     }
 
     renderSearchResults(payload);
@@ -446,12 +454,8 @@
           text: preset.answer,
           cited: preset.citations
         };
-      } else {
-        answer = {
-          text: `Based on the retrieved course evidence, the operating system manages this behavior through hardware and kernel mechanisms. Relevant sections in the material confirm the state transitions, scheduling properties, and memory mapping structures referenced in the retrieved passages.`,
-          cited: evidence.slice(0, 2).map(e => e.citation)
-        };
       }
+      // No cached answer for this question: show none rather than invent one.
     }
 
     return {
@@ -486,6 +490,9 @@
       const total = t.total_wall_clock || t.total || 30.8;
       parts.push(`<div class="stage-timing-item" style="color:var(--cyan-glow); font-weight:700;"><span>Total Latency:</span><span class="val" style="color:#ffffff;">${Math.round(total)} ms</span></div>`);
       stageBar.innerHTML = parts.join('');
+    }
+    if (stageBar && payload.offline) {
+      stageBar.innerHTML = `<div style="color:#ffb347; font-weight:700; width:100%;">OFFLINE MODE: backend not reachable. Showing cached evaluation results, not a live search. Start it with: python server.py</div>` + stageBar.innerHTML;
     }
 
     // 2. Answer Box

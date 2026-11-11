@@ -44,7 +44,7 @@ SHORT = {
     "Hybrid (BM25 + dense)": "Hybrid",
     "Hybrid + CLIP images": "+ CLIP",
     "Full system (+ reranker)": "+ Rerank",
-    "Tuned system (adaptive visual + rerank)": "Tuned",
+    "Tuned system (adaptive + rerank)": "Tuned",
 }
 
 

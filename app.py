@@ -117,9 +117,11 @@ def main() -> None:
     _warm(method_key)
 
     t0 = time.perf_counter()
-    result = search_mod.search(question, k=k, method=config.METHODS[method_key])
+    method = config.METHODS[method_key]
+    result = search_mod.search(question, k=k, method=method)
     result.evidence = search_mod.select_final(
-        result.candidates, k=k, max_images=max_images)
+        result.candidates, k=k, max_images=max_images,
+        query=question, adaptive=method.adaptive_slots)
     elapsed = time.perf_counter() - t0
 
     answer = None

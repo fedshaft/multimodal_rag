@@ -59,9 +59,9 @@ async def api_query(request):
     if not query:
         return JSONResponse({"error": "Query string is empty"}, status_code=400)
 
-    method_key = body.get("method", "multimodal")
+    method_key = body.get("method", "full")
     if method_key not in config.METHODS:
-        method_key = "multimodal"
+        method_key = "full"
 
     k = int(body.get("k", config.TOP_K_FINAL))
     max_images = int(body.get("max_images", config.MAX_IMAGES_FINAL))
@@ -80,7 +80,11 @@ async def api_query(request):
     t0 = time.perf_counter()
     try:
         result = search_mod.search(query, k=k, method=method)
-        result.evidence = search_mod.select_final(result.candidates, k=k, max_images=max_images)
+        # Re-cut with the UI's image cap, keeping the query and the method's
+        # adaptive setting so the demo runs exactly what the evaluation measured.
+        result.evidence = search_mod.select_final(
+            result.candidates, k=k, max_images=max_images,
+            query=query, adaptive=method.adaptive_slots)
         elapsed = time.perf_counter() - t0
     except Exception as exc:
         return JSONResponse({
