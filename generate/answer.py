@@ -191,7 +191,7 @@ def warm_up(model: str | None = None) -> float:
         get_client().chat(
             model=model or config.GEN_MODEL,
             messages=[{"role": "user", "content": "hi"}],
-            options={"num_predict": 1},
+            options={"num_predict": 1, "num_ctx": config.GEN_NUM_CTX},
         )
     except Exception as exc:  # noqa: BLE001 - re-raised with instructions
         raise GenerationError(_unreachable_message(exc)) from exc
@@ -237,7 +237,8 @@ def generate(question: str, evidence: list[Evidence],
         resp = get_client().chat(
             model=model,
             messages=[{"role": "system", "content": config.SYSTEM_PROMPT}, message],
-            options={"temperature": config.GEN_TEMPERATURE},
+            options={"temperature": config.GEN_TEMPERATURE,
+                     "num_ctx": config.GEN_NUM_CTX},
         )
     except Exception as exc:  # noqa: BLE001 - re-raised with instructions
         raise GenerationError(_unreachable_message(exc)) from exc

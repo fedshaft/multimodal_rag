@@ -76,6 +76,12 @@ machines — override it without editing the file:
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 GEN_TIMEOUT = 300  # seconds; CPU generation with images is genuinely slow
 
+GEN_NUM_CTX = int(os.environ.get("RAG_GEN_NUM_CTX", "8192"))
+"""Context window passed to Ollama on every call. A question plus five evidence
+items (up to three of them images) runs to ~4,300 tokens, which overflows
+Ollama's 4,096 default with a 400 error. Set explicitly so every machine
+behaves the same whatever its Ollama default is."""
+
 GEN_TEMPERATURE = 0.0
 """Greedy decoding. Sampling would make the same question give a different
 answer on every run, which would mean day 5's citation accuracy — and the demo
